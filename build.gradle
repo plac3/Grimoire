@@ -4,14 +4,7 @@ plugins {
 }
 
 ext {
-    def os = System.getProperty("os.name").toLowerCase()
-    if (os.contains("win")) {
-        hytaleHome = "${System.getProperty("user.home")}/AppData/Roaming/Hytale"
-    } else if (os.contains("mac")) {
-        hytaleHome = "${System.getProperty("user.home")}/Library/Application Support/Hytale"
-    } else {
-        hytaleHome = "${System.getProperty("user.home")}/.var/app/com.hypixel.HytaleLauncher/data/Hytale"
-    }
+    hytaleHome = "${System.getProperty("user.home")}/AppData/Roaming/Hytale"
 }
 
 java {
@@ -65,12 +58,12 @@ idea.project.settings.runConfigurations {
     'HytaleServer'(org.jetbrains.gradle.ext.Application) {
         mainClass = 'com.hypixel.hytale.Main'
         moduleName = project.idea.module.name + '.main'
-        programParameters = '--allow-op --assets="' + "${hytaleHome}/install/$patchline/package/game/latest/Assets.zip" + '"'
+        programParameters = "--allow-op --disable-sentry --assets=$hytaleHome/install/$patchline/package/game/latest/Assets.zip"
         if (includes_pack.toBoolean()) {
-            programParameters += ' --mods="' + sourceSets.main.java.srcDirs.first().parentFile.absolutePath + '"'
+            programParameters += " --mods=${sourceSets.main.java.srcDirs.first().parentFile.absolutePath}"
         }
         if (load_user_mods.toBoolean()) {
-            programParameters += ' --mods="' + "${hytaleHome}/UserData/Mods" + '"'
+            programParameters += " --mods=$hytaleHome/UserData/Mods"
         }
         workingDirectory = serverRunDir.absolutePath
     }
