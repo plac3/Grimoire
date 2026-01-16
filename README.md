@@ -1,18 +1,15 @@
-# Hytale Example Plugin
+# Grimoire
+A spell library for Hytale, can be used and edited as you wish as long as you credit the source!
+ECS is somewhat janky with this one, as I don't fully understand the Hytale codebase yet (no docs) but I did try my best for implementation with a few things from unofficial sources as they're created.
+forked from https://github.com/Build-9/Hytale-Example-Project
 
-An example project that can build and run plugins for the game Hytale!
+# Status
+Currently not working, haven't figured out why but Orbit componentType is null for some reason.
 
 > **⚠️ Warning: Early Access**    
 > The game Hytale is in early access, and so is this project! Features may be
 > incomplete, unstable, or change frequently. Please be patient and understanding as development
 > continues.
-
-## Introduction
-This project contains a Gradle project that can be imported into IDEA and used
-as the foundation for custom Hytale plugins. The template will add the Hytale
-server to your classpath and create a run configuration that can be used to
-run your plugin on the server. It can also be used to build a sharable JAR file
-that contains your plugin.
 
 ## Requirements
 Please ensure all the requirements are met before getting started.
@@ -87,13 +84,3 @@ authenticated.
         CommandManager.get().handleCommand(ConsoleSender.INSTANCE, "auth login device");
     }
 ```
-
-
-## Verifying The Example Plugin
-You can verify the Example plugin has loaded by running the `/test` command 
-in game. It will print the name and version of your plugin. This is for 
-demonstration purposes, and should **NOT** be included in your final build.
-
-The example plugin also includes a recipe defined by an asset pack. This recipe
-allows you to craft 10 dirt into 1 dirt using the crafting window. This is also
-an example and should not be removed before you release the plugin.
