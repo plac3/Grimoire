@@ -1,14 +1,14 @@
 {
-    "Group": "Example",
-    "Name": "ExamplePlugin",
+    "Group": "com.sixpl",
+    "Name": "Magic!",
     "Version": "0.0.2",
-    "Description": "An example plugin for HyTale!",
+    "Description": "Integrating new spells into Hytale!",
     "Authors": [
         {
-            "Name": "It's you!"
+            "Name": "sixpl"
         }
     ],
-    "Website": "example.org",
+    "Website": "https://www.curseforge.com/members/sixpl/projects",
     "ServerVersion": "*",
     "Dependencies": {
         
@@ -17,6 +17,6 @@
         
     },
     "DisabledByDefault": false,
-    "Main": "org.example.plugin.ExamplePlugin",
+    "Main": "com.sixpl.Magic",
     "IncludesAssetPack": true
 }
