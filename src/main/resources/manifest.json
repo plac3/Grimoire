@@ -17,6 +17,6 @@
         
     },
     "DisabledByDefault": false,
-    "Main": "com.sixpl.Magic",
+    "Main": "com.sixpl.MagicModule",
     "IncludesAssetPack": true
 }

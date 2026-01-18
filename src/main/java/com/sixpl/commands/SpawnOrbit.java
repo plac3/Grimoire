@@ -10,14 +10,17 @@ import com.hypixel.hytale.server.core.entity.entities.ProjectileComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox;
 import com.hypixel.hytale.server.core.modules.entity.component.ModelComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
+import com.hypixel.hytale.server.core.modules.projectile.config.ProjectileConfig;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.sixpl.MagicModule;
 import com.sixpl.component.Orbit;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -39,31 +42,9 @@ public class SpawnOrbit extends AbstractCommand {
         assert worldUUID != null;
         World world = universe.getWorld(worldUUID);
         assert world != null;
-        world.execute(()->{
-            EntityStore entityStores = world.getEntityStore();
-            Store<EntityStore> entityStore = entityStores.getStore();
 
 
-            Holder<EntityStore> tempHolder = entityStore.getRegistry().newHolder();
-            Orbit entityOrbit = new Orbit();
-            entityOrbit.setCaster(caster);
-            tempHolder.addComponent(Orbit.getComponentType(), entityOrbit);
-
-            TransformComponent entityPosition = new TransformComponent();
-            entityPosition.setPosition(casterPlayer.getTransform().getPosition());
-            tempHolder.addComponent(TransformComponent.getComponentType(), entityPosition);
-
-            BoundingBox boundingBox = new BoundingBox();
-            tempHolder.addComponent(BoundingBox.getComponentType(), boundingBox);
-
-            tempHolder.ensureComponent(ProjectileComponent.getComponentType());
-
-            commandContext.sender().sendMessage(Message.raw("Created holder, spawning!"));
-
-            //Archetype<EntityStore> newEntityArchetype = Archetype.of(Orbit.getComponentType(), TransformComponent.getComponentType(), BoundingBox.getComponentType(), ProjectileComponent.getComponentType());
-            Ref<EntityStore> newEntity = entityStore.addEntity(tempHolder, AddReason.SPAWN);
-
-        });
+        MagicModule.get().spawnOrbitObject(Objects.requireNonNull(world.getEntityRef(caster)));
 
         return CompletableFuture.completedFuture(null);
     }

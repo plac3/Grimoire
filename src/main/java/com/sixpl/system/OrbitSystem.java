@@ -12,6 +12,7 @@ import com.hypixel.hytale.server.core.modules.entity.component.TransformComponen
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.sixpl.MagicModule;
 import com.sixpl.component.Orbit;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
@@ -25,9 +26,10 @@ public class OrbitSystem extends EntityTickingSystem<EntityStore> {
 
     @Override
     public void tick(float deltaTime, int index, @NonNullDecl ArchetypeChunk<EntityStore> archetypeChunk, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
-        TransformComponent transform = archetypeChunk.getComponent(index, TransformComponent.getComponentType());
+        Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(index);
+        TransformComponent transform = store.getComponent(entityRef, TransformComponent.getComponentType());
         assert transform != null;
-        Orbit orbit = archetypeChunk.getComponent(index, Orbit.getComponentType());
+        Orbit orbit = store.getComponent(entityRef, Orbit.getComponentType());
         assert orbit != null;
         PlayerRef player = Universe.get().getPlayer(orbit.getCaster());
         assert player != null;
@@ -49,6 +51,6 @@ public class OrbitSystem extends EntityTickingSystem<EntityStore> {
     @NullableDecl
     @Override
     public Query<EntityStore> getQuery() {
-        return this.query;
+        return MagicModule.get().getOrbitComponentType();
     }
 }
