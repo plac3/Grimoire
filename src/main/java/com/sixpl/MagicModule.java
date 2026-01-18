@@ -54,6 +54,7 @@ public class MagicModule extends JavaPlugin {
         System.out.println("Spawning orbit object.");
         Store<EntityStore> entityStore = entity.getStore();
         World world = entityStore.getExternalData().getWorld();
+        world.execute(() -> {
         Holder<EntityStore> newHolder = EntityStore.REGISTRY.newHolder();
         UUID entityUUID = Objects.requireNonNull(entityStore.getComponent(entity, UUIDComponent.getComponentType())).getUuid();
 
@@ -72,7 +73,6 @@ public class MagicModule extends JavaPlugin {
         orbitComponent.setCaster(entityUUID);
         newHolder.addComponent(Orbit.getComponentType(), orbitComponent);
         System.out.println("Should have created a new entity.");
-        world.execute(() -> {
             System.out.println("Spawning entity hopefully.");
             entityStore.addEntity(newHolder, AddReason.SPAWN);
         });

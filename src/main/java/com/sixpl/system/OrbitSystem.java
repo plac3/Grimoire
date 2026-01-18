@@ -7,6 +7,7 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -34,6 +35,7 @@ public class OrbitSystem extends EntityTickingSystem<EntityStore> {
         PlayerRef player = Universe.get().getPlayer(orbit.getCaster());
         assert player != null;
         Ref<EntityStore> playerReference = player.getReference();
+        orbit.addTime(deltaTime);
 
         if (playerReference != null && playerReference.isValid()){
             Vector3d PlayerPosition = player.getTransform().getPosition();
@@ -43,6 +45,8 @@ public class OrbitSystem extends EntityTickingSystem<EntityStore> {
 
             Vector3d OrbitingPosition = PlayerPosition.clone().add(offsetX, 0, offsetY);
             transform.setPosition(OrbitingPosition);
+            Vector3d deltaPosition = (OrbitingPosition.subtract(PlayerPosition));
+            transform.setRotation(deltaPosition.toVector3f());
             System.out.println("Updated position to orbit player.");
         }
 
