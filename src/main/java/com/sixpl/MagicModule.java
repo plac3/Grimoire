@@ -16,10 +16,13 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.Config;
 import com.sixpl.commands.SpawnOrbit;
 import com.sixpl.component.ArcComponent;
+import com.sixpl.component.MagicCircleComponent;
 import com.sixpl.component.OrbitComponent;
 import com.sixpl.component.SpellComponent;
 import com.sixpl.config.SpellConfig;
 import com.sixpl.interactions.SpellInteraction;
+import com.sixpl.system.ArcSystem;
+import com.sixpl.system.MagicCircleSystem;
 import com.sixpl.system.OrbitSystem;
 import com.sixpl.system.SpellSystem;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
@@ -32,6 +35,7 @@ public class MagicModule extends JavaPlugin {
     private ComponentType<EntityStore, OrbitComponent> orbitComponent;
     private ComponentType<EntityStore, SpellComponent> spellComponent;
     private ComponentType<EntityStore, ArcComponent> arcComponent;
+    private ComponentType<EntityStore, MagicCircleComponent> magicCircleComponent;
     private Config<SpellConfig> spellConfig;
 
     public static MagicModule get() { return instance; }
@@ -50,9 +54,12 @@ public class MagicModule extends JavaPlugin {
         orbitComponent = registryProxy.registerComponent(OrbitComponent.class, "Orbit", OrbitComponent.CODEC);
         spellComponent = registryProxy.registerComponent(SpellComponent.class, "Spell", SpellComponent.CODEC);
         arcComponent = registryProxy.registerComponent(ArcComponent.class, ArcComponent::new);
+        magicCircleComponent = registryProxy.registerComponent(MagicCircleComponent.class, MagicCircleComponent::new);
         this.getCodecRegistry(Interaction.CODEC).register("SpellInteraction", SpellInteraction.class, SpellInteraction.CODEC);
         registryProxy.registerSystem(new OrbitSystem());
         registryProxy.registerSystem(new SpellSystem());
+        registryProxy.registerSystem(new ArcSystem());
+        registryProxy.registerSystem(new MagicCircleSystem());
         getCommandRegistry().registerCommand(new SpawnOrbit());
     }
 
@@ -93,6 +100,7 @@ public class MagicModule extends JavaPlugin {
     }
     public ComponentType<EntityStore, SpellComponent> getSpellComponentType() { return this.spellComponent; }
     public ComponentType<EntityStore, ArcComponent> getArcComponentType() { return this.arcComponent; }
+    public ComponentType<EntityStore, MagicCircleComponent> getMagicCircleComponentType() { return this.magicCircleComponent; }
 
     public void tick(float deltaTime){
 
