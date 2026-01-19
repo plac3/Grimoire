@@ -19,11 +19,9 @@ public class SpellSystem extends EntityTickingSystem<EntityStore> {
         if (entityRef != null && entityRef.isValid() && caster != null && caster.isValid()){
             spellComponent.setLifetime(spellComponent.getLifetime()-deltaTime);
             if (spellComponent.getLifetime() <= 0){
-                store.removeEntity(entityRef, RemoveReason.REMOVE);
+
                 return;
             }
-        } else {
-            store.removeEntity(entityRef, RemoveReason.REMOVE);
         }
     }
 

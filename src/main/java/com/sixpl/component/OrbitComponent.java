@@ -20,6 +20,10 @@ public class OrbitComponent implements Component<EntityStore>, IBlockCollisionCo
     private double speed = 5;
     public static BuilderCodec<OrbitComponent> CODEC;
 
+    public OrbitComponent(){
+
+    }
+
     public static ComponentType<EntityStore, OrbitComponent> getComponentType(){
         return MagicModule.get().getOrbitComponentType();
     }

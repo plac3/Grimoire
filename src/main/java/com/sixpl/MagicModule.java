@@ -15,16 +15,10 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.Config;
 import com.sixpl.commands.SpawnOrbit;
-import com.sixpl.component.ArcComponent;
-import com.sixpl.component.MagicCircleComponent;
-import com.sixpl.component.OrbitComponent;
-import com.sixpl.component.SpellComponent;
+import com.sixpl.component.*;
 import com.sixpl.config.SpellConfig;
 import com.sixpl.interactions.SpellInteraction;
-import com.sixpl.system.ArcSystem;
-import com.sixpl.system.MagicCircleSystem;
-import com.sixpl.system.OrbitSystem;
-import com.sixpl.system.SpellSystem;
+import com.sixpl.system.*;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
 import java.util.Objects;
@@ -36,6 +30,7 @@ public class MagicModule extends JavaPlugin {
     private ComponentType<EntityStore, SpellComponent> spellComponent;
     private ComponentType<EntityStore, ArcComponent> arcComponent;
     private ComponentType<EntityStore, MagicCircleComponent> magicCircleComponent;
+    private ComponentType<EntityStore, TelekinesisComponent> telekinesisComponent;
     private Config<SpellConfig> spellConfig;
 
     public static MagicModule get() { return instance; }
@@ -55,11 +50,13 @@ public class MagicModule extends JavaPlugin {
         spellComponent = registryProxy.registerComponent(SpellComponent.class, "Spell", SpellComponent.CODEC);
         arcComponent = registryProxy.registerComponent(ArcComponent.class, ArcComponent::new);
         magicCircleComponent = registryProxy.registerComponent(MagicCircleComponent.class, MagicCircleComponent::new);
+        telekinesisComponent = registryProxy.registerComponent(TelekinesisComponent.class, TelekinesisComponent::new);
         this.getCodecRegistry(Interaction.CODEC).register("SpellInteraction", SpellInteraction.class, SpellInteraction.CODEC);
         registryProxy.registerSystem(new OrbitSystem());
         registryProxy.registerSystem(new SpellSystem());
         registryProxy.registerSystem(new ArcSystem());
         registryProxy.registerSystem(new MagicCircleSystem());
+        registryProxy.registerSystem(new TelekinesisSystem());
         getCommandRegistry().registerCommand(new SpawnOrbit());
     }
 
@@ -101,6 +98,7 @@ public class MagicModule extends JavaPlugin {
     public ComponentType<EntityStore, SpellComponent> getSpellComponentType() { return this.spellComponent; }
     public ComponentType<EntityStore, ArcComponent> getArcComponentType() { return this.arcComponent; }
     public ComponentType<EntityStore, MagicCircleComponent> getMagicCircleComponentType() { return this.magicCircleComponent; }
+    public ComponentType<EntityStore, TelekinesisComponent> getTelekinesisComponentType() { return this.telekinesisComponent; }
 
     public void tick(float deltaTime){
 

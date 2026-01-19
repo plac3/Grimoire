@@ -17,6 +17,10 @@ import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 public class ArcSystem extends EntityTickingSystem<EntityStore> {
     Query<EntityStore> query = Query.and(ArcComponent.getComponentType(), TransformComponent.getComponentType(), SpellComponent.getComponentType());
 
+    Vector3d start;
+    Vector3d middle;
+    Vector3d end;
+
     @Override
     public void tick(float deltaTime, int i, @NonNullDecl ArchetypeChunk<EntityStore> archetypeChunk, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
         Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(i);

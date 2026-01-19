@@ -13,6 +13,9 @@ public class MagicCircleComponent implements Component<EntityStore> {
     private float rotationIncrement;
     private double timeAlive;
 
+    public MagicCircleComponent(){
+
+    }
 
     public void setRotationIncrement(float rotationIncrement) {
         this.rotationIncrement = rotationIncrement;
