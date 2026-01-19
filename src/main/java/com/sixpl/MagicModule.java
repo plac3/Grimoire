@@ -3,7 +3,6 @@ package com.sixpl;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.server.core.asset.type.model.config.Model;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelAsset;
-import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.UUIDComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.ModelComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.PersistentModel;
@@ -16,11 +15,13 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.Config;
 import com.sixpl.commands.SpawnOrbit;
-import com.sixpl.component.Orbit;
+import com.sixpl.component.ArcComponent;
+import com.sixpl.component.OrbitComponent;
+import com.sixpl.component.SpellComponent;
 import com.sixpl.config.SpellConfig;
 import com.sixpl.interactions.SpellInteraction;
 import com.sixpl.system.OrbitSystem;
-import org.bouncycastle.crypto.engines.SM2Engine;
+import com.sixpl.system.SpellSystem;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
 import java.util.Objects;
@@ -28,7 +29,9 @@ import java.util.UUID;
 
 public class MagicModule extends JavaPlugin {
     private static MagicModule instance;
-    private ComponentType<EntityStore, Orbit> orbitComponent;
+    private ComponentType<EntityStore, OrbitComponent> orbitComponent;
+    private ComponentType<EntityStore, SpellComponent> spellComponent;
+    private ComponentType<EntityStore, ArcComponent> arcComponent;
     private Config<SpellConfig> spellConfig;
 
     public static MagicModule get() { return instance; }
@@ -44,17 +47,17 @@ public class MagicModule extends JavaPlugin {
         System.out.println("Setting up");
         ComponentRegistryProxy<EntityStore> registryProxy = this.getEntityStoreRegistry();
 
-        orbitComponent = registryProxy.registerComponent(Orbit.class, "Orbit", Orbit.CODEC);
+        orbitComponent = registryProxy.registerComponent(OrbitComponent.class, "Orbit", OrbitComponent.CODEC);
+        spellComponent = registryProxy.registerComponent(SpellComponent.class, "Spell", SpellComponent.CODEC);
+        arcComponent = registryProxy.registerComponent(ArcComponent.class, ArcComponent::new);
         this.getCodecRegistry(Interaction.CODEC).register("SpellInteraction", SpellInteraction.class, SpellInteraction.CODEC);
         registryProxy.registerSystem(new OrbitSystem());
-
+        registryProxy.registerSystem(new SpellSystem());
         getCommandRegistry().registerCommand(new SpawnOrbit());
     }
-    public void spawnOrbitObject(Ref<EntityStore> entity){
-        System.out.println("Spawning orbit object.");
+
+    public Holder<EntityStore> assembleSpellHolder(Ref<EntityStore> entity){
         Store<EntityStore> entityStore = entity.getStore();
-        World world = entityStore.getExternalData().getWorld();
-        world.execute(() -> {
         Holder<EntityStore> newHolder = EntityStore.REGISTRY.newHolder();
         UUID entityUUID = Objects.requireNonNull(entityStore.getComponent(entity, UUIDComponent.getComponentType())).getUuid();
 
@@ -68,19 +71,28 @@ public class MagicModule extends JavaPlugin {
         newHolder.addComponent(PersistentModel.getComponentType(), new PersistentModel(model.toReference()));
         newHolder.addComponent(ModelComponent.getComponentType(), new ModelComponent(model));
         newHolder.addComponent(UUIDComponent.getComponentType(), new UUIDComponent(UUID.randomUUID()));
+        newHolder.addComponent(SpellComponent.getComponentType(), new SpellComponent(entityUUID));
         newHolder.putComponent(NetworkId.getComponentType(), new NetworkId(entityStore.getExternalData().takeNextNetworkId()));
-        Orbit orbitComponent = new Orbit();
-        orbitComponent.setCaster(entityUUID);
-        newHolder.addComponent(Orbit.getComponentType(), orbitComponent);
-        System.out.println("Should have created a new entity.");
-            System.out.println("Spawning entity hopefully.");
+
+        return newHolder;
+    }
+
+    public void spawnOrbitObject(Ref<EntityStore> entity){
+        Store<EntityStore> entityStore = entity.getStore();
+        World world = entityStore.getExternalData().getWorld();
+        world.execute(() -> {
+            Holder<EntityStore> newHolder = assembleSpellHolder(entity);
+            OrbitComponent orbitComponent = new OrbitComponent();
+            newHolder.addComponent(OrbitComponent.getComponentType(), orbitComponent);
             entityStore.addEntity(newHolder, AddReason.SPAWN);
         });
     }
 
-    public ComponentType<EntityStore, Orbit> getOrbitComponentType() {
+    public ComponentType<EntityStore, OrbitComponent> getOrbitComponentType() {
         return this.orbitComponent;
     }
+    public ComponentType<EntityStore, SpellComponent> getSpellComponentType() { return this.spellComponent; }
+    public ComponentType<EntityStore, ArcComponent> getArcComponentType() { return this.arcComponent; }
 
     public void tick(float deltaTime){
 

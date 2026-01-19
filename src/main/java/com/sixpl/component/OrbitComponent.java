@@ -14,20 +14,18 @@ import com.sixpl.MagicModule;
 
 import java.util.UUID;
 
-public class Orbit implements Component<EntityStore>, IBlockCollisionConsumer {
-    private UUID caster = new UUID(0, 0);
+public class OrbitComponent implements Component<EntityStore>, IBlockCollisionConsumer {
     private double timer = 0;
-    private double amplitude = 5;
-    private double speed = 20;
-    public static BuilderCodec<Orbit> CODEC;
+    private double amplitude = 20;
+    private double speed = 5;
+    public static BuilderCodec<OrbitComponent> CODEC;
 
-    public static ComponentType<EntityStore, Orbit> getComponentType(){
+    public static ComponentType<EntityStore, OrbitComponent> getComponentType(){
         return MagicModule.get().getOrbitComponentType();
     }
 
     public Component<EntityStore> clone(){
-        Orbit newItem = new Orbit();
-        newItem.caster = this.caster;
+        OrbitComponent newItem = new OrbitComponent();
         newItem.amplitude = this.amplitude;
         newItem.speed = this.speed;
         newItem.timer = this.timer;
@@ -42,12 +40,6 @@ public class Orbit implements Component<EntityStore>, IBlockCollisionConsumer {
     }
     public double getTime(){
         return this.timer;
-    }
-    public void setCaster(UUID uuid){
-        this.caster = uuid;
-    }
-    public UUID getCaster() {
-        return this.caster;
     }
     public void setAmplitude(double Amplitude){
         this.amplitude += Amplitude;
@@ -88,12 +80,8 @@ public class Orbit implements Component<EntityStore>, IBlockCollisionConsumer {
 
     }
     static {
-        CODEC = ((((BuilderCodec.builder(Orbit.class, Orbit::new)
+        CODEC = (((BuilderCodec.builder(OrbitComponent.class, OrbitComponent::new)
                 .append(
-                        new KeyedCodec<>("CasterId", BuilderCodec.STRING),
-                        ((orbit, casterId) -> orbit.caster = UUID.fromString(casterId)),
-                        ((orbit) -> orbit.caster.toString())
-                ).add()).append(
                 new KeyedCodec<>("Timer", BuilderCodec.DOUBLE),
                 ((orbit, aDouble) -> orbit.timer = aDouble),
                 (orbit) -> orbit.timer

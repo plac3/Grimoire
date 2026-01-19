@@ -1,25 +1,22 @@
 package com.sixpl.system;
 
-import com.hypixel.hytale.component.ArchetypeChunk;
-import com.hypixel.hytale.component.CommandBuffer;
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
-import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.sixpl.MagicModule;
-import com.sixpl.component.Orbit;
+import com.sixpl.component.OrbitComponent;
+import com.sixpl.component.SpellComponent;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
+import java.util.Objects;
+
 public class OrbitSystem extends EntityTickingSystem<EntityStore> {
-    Query<EntityStore> query = Query.and(new Query[]{Orbit.getComponentType(), TransformComponent.getComponentType(), BoundingBox.getComponentType()});
+    Query<EntityStore> query = Query.and(OrbitComponent.getComponentType(), TransformComponent.getComponentType(), SpellComponent.getComponentType());
 
     public OrbitSystem() {
 
@@ -30,24 +27,24 @@ public class OrbitSystem extends EntityTickingSystem<EntityStore> {
         Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(index);
         TransformComponent transform = store.getComponent(entityRef, TransformComponent.getComponentType());
         assert transform != null;
-        Orbit orbit = store.getComponent(entityRef, Orbit.getComponentType());
+        OrbitComponent orbit = store.getComponent(entityRef, OrbitComponent.getComponentType());
         assert orbit != null;
-        PlayerRef player = Universe.get().getPlayer(orbit.getCaster());
-        assert player != null;
-        Ref<EntityStore> playerReference = player.getReference();
+        SpellComponent spellComponent = store.getComponent(entityRef, SpellComponent.getComponentType());
+        assert spellComponent != null;
         orbit.addTime(deltaTime);
 
-        if (playerReference != null && playerReference.isValid()){
-            Vector3d PlayerPosition = player.getTransform().getPosition();
-            double currentAngle = orbit.getTime()*orbit.getSpeed();
-            double offsetX = Math.cos(currentAngle) * orbit.getAmplitude();
-            double offsetY = Math.sin(currentAngle) * orbit.getAmplitude();
+        Ref<EntityStore> caster = entityRef.getStore().getExternalData().getRefFromUUID(spellComponent.getCaster());
 
-            Vector3d OrbitingPosition = PlayerPosition.clone().add(offsetX, 0, offsetY);
+        if (entityRef.isValid() && caster != null && caster.isValid()){
+            Vector3d PlayerPosition = Objects.requireNonNull(store.getComponent(caster, TransformComponent.getComponentType())).getTransform().getPosition();
+            double currentAngle = orbit.getTime()*orbit.getSpeed();
+            double offsetX = Math.cos(currentAngle)*deltaTime * orbit.getAmplitude();
+            double offsetY = Math.sin(currentAngle)*deltaTime * orbit.getAmplitude();
+
+            Vector3d OrbitingPosition = PlayerPosition.clone().add(offsetX, 1, offsetY);
             transform.setPosition(OrbitingPosition);
-            Vector3d deltaPosition = (OrbitingPosition.subtract(PlayerPosition));
-            transform.setRotation(deltaPosition.toVector3f());
-            System.out.println("Updated position to orbit player.");
+        } else {
+            store.removeEntity(entityRef, RemoveReason.REMOVE);
         }
 
     }
@@ -55,6 +52,6 @@ public class OrbitSystem extends EntityTickingSystem<EntityStore> {
     @NullableDecl
     @Override
     public Query<EntityStore> getQuery() {
-        return MagicModule.get().getOrbitComponentType();
+        return query;
     }
 }
