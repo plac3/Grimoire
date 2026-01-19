@@ -57,7 +57,7 @@ public class MagicModule extends JavaPlugin {
         registryProxy.registerSystem(new ArcSystem());
         registryProxy.registerSystem(new MagicCircleSystem());
         registryProxy.registerSystem(new TelekinesisSystem());
-        getCommandRegistry().registerCommand(new SpawnOrbit());
+        //getCommandRegistry().registerCommand(new SpawnOrbit());
     }
 
     public Holder<EntityStore> assembleSpellHolder(Ref<EntityStore> entity){
